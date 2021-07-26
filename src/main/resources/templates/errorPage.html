@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<title>Error page</title>
+  	<link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+	<h2>Error page</h2>
+	<div class="div">
+		<a  href="#" th:href="@{/weather}" style="text-decoration: none"class="link">WEATHER DATA PAGE</a>
+	</div>
+
+	<div th:if = "${ weatherData == null }" class="div1">
+		<h2>Incorrect city name or lost internet connection</h2>
+	</div>
+</body>
+</html>
