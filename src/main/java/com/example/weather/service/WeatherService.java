@@ -4,9 +4,10 @@ import com.example.weather.model.Weather;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface WeatherService {
-    Weather requestWeather(String city) throws JsonProcessingException;
+    Optional<Weather> requestWeather(String city) throws JsonProcessingException;
 
     Weather saveWeather(Weather weather);
 

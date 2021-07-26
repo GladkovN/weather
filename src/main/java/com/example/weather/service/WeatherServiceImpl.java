@@ -6,7 +6,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -16,9 +15,9 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 @Service
-@PropertySource("classpath:application.properties")
 public class WeatherServiceImpl implements WeatherService {
 
     @Autowired
@@ -31,7 +30,7 @@ public class WeatherServiceImpl implements WeatherService {
     private String apikey;
 
     @Override
-    public Weather requestWeather(String city) throws JsonProcessingException {
+    public Optional<Weather> requestWeather(String city) throws JsonProcessingException {
 
         String uri = UriComponentsBuilder
                 .newInstance()
@@ -43,9 +42,9 @@ public class WeatherServiceImpl implements WeatherService {
 
         try {
             ResponseEntity<String> resp = new RestTemplate().exchange(uri, HttpMethod.GET, null, String.class);
-            return new ObjectMapper().readValue(Objects.requireNonNull(resp.getBody()), Weather.class);
+            return Optional.of(new ObjectMapper().readValue(Objects.requireNonNull(resp.getBody()), Weather.class));
         } catch (RestClientException | NullPointerException e) {
-            return null;
+            return Optional.empty();
         }
     }
 

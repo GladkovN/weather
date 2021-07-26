@@ -10,9 +10,10 @@ import org.springframework.web.bind.annotation.*;
 import com.example.weather.model.Weather;
 
 import java.util.List;
+import java.util.Optional;
 
 @Controller
-@RequestMapping(value = "/weather")
+@RequestMapping
 public class WeatherController {
 
     @Autowired
@@ -28,11 +29,11 @@ public class WeatherController {
 
     @PostMapping
     public String getWeather(Model model, @RequestParam String city) throws JsonProcessingException {
-        Weather weather = weatherService.requestWeather(city);
-        if (weather != null) {
-            weatherService.saveWeather(weather);
-            model.addAttribute("weatherData", weather);
-            return "redirect:weather";
+        Optional<Weather> weatherOptional = weatherService.requestWeather(city);
+        if (weatherOptional.isPresent()) {
+            weatherService.saveWeather(weatherOptional.get());
+            model.addAttribute("weatherData", weatherOptional.get());
+            return "redirect:";
         } else return "errorPage";
     }
 }
