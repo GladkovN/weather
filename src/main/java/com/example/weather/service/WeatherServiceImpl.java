@@ -1,10 +1,12 @@
 package com.example.weather.service;
 
-import com.example.weather.domain.Weather;
-import com.example.weather.domain.WeatherUrl;
+import com.example.weather.model.Weather;
 import com.example.weather.repository.WeatherRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -15,39 +17,41 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.util.List;
 import java.util.Objects;
 
-@Service( "weatherServiceBean" )
-public class WeatherServiceImpl implements WeatherService{
+@Service
+@PropertySource("classpath:application.properties")
+public class WeatherServiceImpl implements WeatherService {
 
-    private final WeatherUrl weatherUrl;
-    private final WeatherRepository weatherRepository;
+    @Autowired
+    private WeatherRepository weatherRepository;
 
+    @Value("${weather.url}")
+    private String url;
 
-    public WeatherServiceImpl ( WeatherUrl weatherUrl, WeatherRepository weatherRepository ){
-        this.weatherUrl = weatherUrl;
-        this.weatherRepository = weatherRepository;
-    }
-
+    @Value("${weather.apikey}")
+    private String apikey;
 
     @Override
-    public Weather requestWeather( String city ) throws JsonProcessingException {
+    public Weather requestWeather(String city) throws JsonProcessingException {
 
         String uri = UriComponentsBuilder
                 .newInstance()
-                .scheme( "https" )
-                .host( weatherUrl.getUrl() )
-                .query( "q={city name}&appid={API key}" )
-                .buildAndExpand( city, weatherUrl.getApiKey() )
+                .scheme("https")
+                .host(url)
+                .query("q={city name}&appid={API key}")
+                .buildAndExpand(city, apikey)
                 .toUriString();
 
-    try {
-        ResponseEntity<String> resp = new RestTemplate().exchange( uri, HttpMethod.GET, null, String.class );
-        return new ObjectMapper().readValue( Objects.requireNonNull( resp.getBody() ), Weather.class );
-        } catch ( RestClientException  | NullPointerException e ){ return null; }
+        try {
+            ResponseEntity<String> resp = new RestTemplate().exchange(uri, HttpMethod.GET, null, String.class);
+            return new ObjectMapper().readValue(Objects.requireNonNull(resp.getBody()), Weather.class);
+        } catch (RestClientException | NullPointerException e) {
+            return null;
+        }
     }
 
     @Override
-    public Weather saveWeather( Weather weather ) {
-        return weatherRepository.save( weather );
+    public Weather saveWeather(Weather weather) {
+        return weatherRepository.save(weather);
     }
 
     @Override

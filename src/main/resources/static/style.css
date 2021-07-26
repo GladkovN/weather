@@ -1,61 +1,61 @@
 form {
-    text-align:center;
+    text-align: center;
 }
 
-h2{
-    text-align:center;
+h2 {
+    text-align: center;
 }
 
-input{
+input {
     height: 30px;
     width: 200px;
     border-radius: 5px;
     text-align: center;
 }
 
-input:focus{
+input:focus {
     border: black 3px solid;
 }
 
 .div {
-    background-color: rgb(64,199,129);
+    background-color: rgb(64, 199, 129);
     padding: 10px 20px;
     display: block;
     margin: 10px;
-    text-align:center;
+    text-align: center;
 }
 
 .div1 {
-	padding: 10px 20px;
+    padding: 10px 20px;
 }
 
-.link{
- color: white;
- padding: 10px 20px;
+.link {
+    color: white;
+    padding: 10px 20px;
 }
 
-.link:hover{
-	color:black;
+.link:hover {
+    color: black;
 }
 
-.link:active{
- background:grey;
+.link:active {
+    background: grey;
 }
 
 #table {
     border-collapse: collapse;
-    text-align:center;
+    text-align: center;
 }
 
 #table td, #table th {
     border: 1px solid black;
     padding: 5px;
-   
+
 }
 
 #table th {
     text-align: center;
-    background-color: rgb(64,199,129);
+    background-color: rgb(64, 199, 129);
     color: white;
 }
 
@@ -69,13 +69,17 @@ input:focus{
     text-decoration: none;
     padding: .8em 1em calc(.8em + 3px);
     border-radius: 3px;
-    background: rgb(64,199,129);
-    box-shadow: 0 -3px rgb(53,167,110) inset;
+    background: rgb(64, 199, 129);
+    box-shadow: 0 -3px rgb(53, 167, 110) inset;
     transition: 0.2s;
 }
-.submit-button:hover { background: rgb(53, 167, 110); }
+
+.submit-button:hover {
+    background: rgb(53, 167, 110);
+}
+
 .submit-button:active {
-    background: rgb(33,147,90);
-    box-shadow: 0 3px rgb(33,147,90) inset;
+    background: rgb(33, 147, 90);
+    box-shadow: 0 3px rgb(33, 147, 90) inset;
 }
 
