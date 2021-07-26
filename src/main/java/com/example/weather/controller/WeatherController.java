@@ -2,38 +2,33 @@ package com.example.weather.controller;
 
 import com.example.weather.service.WeatherService;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import com.example.weather.model.Weather;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.Objects;
 
 @Controller
-@RequestMapping
+@RequestMapping("/weather")
 public class WeatherController {
 
     @Autowired
     private WeatherService weatherService;
 
     @GetMapping
-    public String setCity(Model model) {
-        List<Weather> weatherList = weatherService.getAll();
-        model.addAttribute("city", "");
-        model.addAttribute("weatherList", weatherList);
-        return "setCityForm";
+    public ResponseEntity<String> getWeather(@RequestParam String city) {
+        return weatherService.requestWeather(city);
     }
 
     @PostMapping
-    public String getWeather(Model model, @RequestParam String city) throws JsonProcessingException {
-        Optional<Weather> weatherOptional = weatherService.requestWeather(city);
-        if (weatherOptional.isPresent()) {
-            weatherService.saveWeather(weatherOptional.get());
-            model.addAttribute("weatherData", weatherOptional.get());
-            return "redirect:";
-        } else return "errorPage";
+    public ResponseEntity<String> saveWeather(@RequestParam String city) throws JsonProcessingException {
+        ResponseEntity<String> responseEntity = weatherService.requestWeather(city);
+        Weather weather = new ObjectMapper().readValue(Objects.requireNonNull(responseEntity.getBody()), Weather.class);
+        weatherService.saveWeather(weather);
+        return responseEntity;
     }
 }
