@@ -10,6 +10,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.util.List;
+
 
 @Service
 public class WeatherServiceImpl implements WeatherService {
@@ -24,8 +26,8 @@ public class WeatherServiceImpl implements WeatherService {
     private String apikey;
 
     @Override
-    public ResponseEntity<String> requestWeather(String city) {
-        String uri = UriComponentsBuilder
+    public String getWeatherUrl(String city) {
+        return UriComponentsBuilder
                 .newInstance()
                 .scheme("https")
                 .host(url)
@@ -33,12 +35,16 @@ public class WeatherServiceImpl implements WeatherService {
                 .buildAndExpand(city, apikey)
                 .toUriString();
 
-        return new RestTemplate().exchange(uri, HttpMethod.GET, null, String.class);
     }
 
     @Override
     public Weather saveWeather(Weather weather) {
         return weatherRepository.save(weather);
+    }
+
+    @Override
+    public List<Weather> getAll() {
+        return weatherRepository.findAll();
     }
 
 }

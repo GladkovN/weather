@@ -1,11 +1,13 @@
 package com.example.weather.service;
 
 import com.example.weather.model.Weather;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import org.springframework.http.ResponseEntity;
+
+import java.util.List;
 
 public interface WeatherService {
-    ResponseEntity<String> requestWeather(String city);
+    String getWeatherUrl(String city);
 
     Weather saveWeather(Weather weather);
+
+    List<Weather> getAll();
 }
