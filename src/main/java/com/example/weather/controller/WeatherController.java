@@ -2,17 +2,20 @@ package com.example.weather.controller;
 
 import com.example.weather.service.WeatherService;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.example.weather.model.Weather;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
-import java.util.Optional;
+import java.util.Objects;
 
-@Controller
+@RestController
 @RequestMapping("/weather")
 public class WeatherController {
 
@@ -20,20 +23,17 @@ public class WeatherController {
     private WeatherService weatherService;
 
     @GetMapping
-    public String setCity(Model model) {
+    public ResponseEntity<List<Weather>> getWeather() {
         List<Weather> weatherList = weatherService.getAll();
-        model.addAttribute("city", "");
-        model.addAttribute("weatherList", weatherList);
-        return "setCityForm";
+        return ResponseEntity.status(HttpStatus.OK).body(weatherList);
     }
 
     @PostMapping
-    public String getWeather(Model model, @RequestParam String city) throws JsonProcessingException {
-        Optional<Weather> weatherOptional = weatherService.requestWeather(city);
-        if (weatherOptional.isPresent()) {
-            weatherService.saveWeather(weatherOptional.get());
-            model.addAttribute("weatherData", weatherOptional.get());
-            return "redirect:";
-        } else return "errorPage";
+    public ResponseEntity<String> saveWeather(@RequestParam String city) throws JsonProcessingException {
+        String weatherUrl = weatherService.getWeatherUrl(city);
+        ResponseEntity<String> responseEntity = new RestTemplate().exchange(weatherUrl, HttpMethod.GET, null, String.class);
+        Weather weather = new ObjectMapper().readValue(Objects.requireNonNull(responseEntity.getBody()), Weather.class);
+        weatherService.saveWeather(weather);
+        return responseEntity;
     }
 }
