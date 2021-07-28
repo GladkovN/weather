@@ -2,7 +2,9 @@ package com.example.weather.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AccessLevel;
 import lombok.Data;
+import lombok.Setter;
 
 import java.util.List;
 import java.util.Map;
@@ -15,6 +17,7 @@ import javax.persistence.*;
 @Data
 public class Weather {
     @Id
+    @Setter(AccessLevel.PRIVATE)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 

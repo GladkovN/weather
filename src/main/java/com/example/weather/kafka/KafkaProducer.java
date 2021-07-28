@@ -10,10 +10,10 @@ import org.springframework.util.concurrent.ListenableFuture;
 @Component
 public class KafkaProducer {
     @Autowired
-    private KafkaTemplate<String, Weather> kafkaTemplate;
+    private KafkaTemplate<Long, Weather> kafkaTemplate;
 
     public void send(String topic, Weather weather){
-        ListenableFuture<SendResult<String, Weather>> future = kafkaTemplate.send(topic,"id",weather);
+        ListenableFuture<SendResult<Long, Weather>> future = kafkaTemplate.send(topic,weather);
         future.addCallback(System.out::println, System.err::println);
         kafkaTemplate.flush();
     }
