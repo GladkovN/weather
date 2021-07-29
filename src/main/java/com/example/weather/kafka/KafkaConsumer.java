@@ -9,21 +9,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 
-
 @Component
 public class KafkaConsumer {
     @Autowired
     private WeatherStorageService weatherStorageService;
 
     @KafkaListener(topics = "weather")
-    public void orderListener(ConsumerRecord<Long, Weather> record) throws JsonProcessingException {
+    public void orderListener(ConsumerRecord<Long, Object> record) throws JsonProcessingException {
         Weather weather = new Weather();
-// TODO: 28.07.2021   Тут много навороченно из-за того что я хз почему record.value() как бэ Weather возвращает
-//  но при попытке с  ним что-то сделать падает ClassCastExeption и прочие радости
-        String jsonWeather = ((Object) record.value()).toString();
+        Object objWeather = record.value();
+        String jsonWeather = objWeather.toString();
         Weather weatherOfJson = new ObjectMapper().readValue(jsonWeather, Weather.class);
-
-        weather.setCity(weatherOfJson.getCity());
+        weather.setName(weatherOfJson.getName());
         weather.setWindSpeed(weatherOfJson.getWindSpeed());
         weather.setWeatherDescription(weatherOfJson.getWeatherDescription());
         weather.setTemperature(weatherOfJson.getTemperature());

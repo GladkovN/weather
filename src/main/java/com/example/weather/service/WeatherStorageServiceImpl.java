@@ -8,10 +8,10 @@ import org.springframework.stereotype.Service;
 @Service
 public class WeatherStorageServiceImpl implements WeatherStorageService {
     @Autowired
-    WeatherRepository weatherRepository;
+    private WeatherRepository weatherRepository;
 
     @Override
-    public Weather saveWeather(Weather weather) {
-        return weatherRepository.save(weather);
+    public void saveWeather(Weather weather) {
+        weatherRepository.save(weather);
     }
 }

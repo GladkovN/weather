@@ -13,6 +13,7 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.Objects;
+
 @Service
 public class WeatherRequestServiceImpl implements WeatherRequestService {
     @Autowired
@@ -25,16 +26,16 @@ public class WeatherRequestServiceImpl implements WeatherRequestService {
     private String apikey;
 
     @Override
-    public void requestWeather(String city) throws JsonProcessingException {
-      String weatherUrl = UriComponentsBuilder
-              .newInstance()
-              .scheme("https")
-              .host(url)
-              .query("q={city name}&appid={API key}")
-              .buildAndExpand(city, apikey)
-              .toUriString();
+    public void sendWeatherInKafkaProducer(String city) throws JsonProcessingException {
+        String weatherUrl = UriComponentsBuilder
+                .newInstance()
+                .scheme("https")
+                .host(url)
+                .query("q={city name}&appid={API key}")
+                .buildAndExpand(city, apikey)
+                .toUriString();
         ResponseEntity<String> responseEntity = new RestTemplate().exchange(weatherUrl, HttpMethod.GET, null, String.class);
         Weather weather = new ObjectMapper().readValue(Objects.requireNonNull(responseEntity.getBody()), Weather.class);
-        kafkaProducer.send("weather",weather);
+        kafkaProducer.send("weather", weather);
     }
 }

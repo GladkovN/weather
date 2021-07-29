@@ -5,5 +5,5 @@ import com.example.weather.model.Weather;
 import java.util.List;
 
 public interface UserService {
-    List<Weather>getAllWeather();
+    List<Weather> getAllWeather();
 }
