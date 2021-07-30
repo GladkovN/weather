@@ -19,7 +19,7 @@ public class Weather {
     private Long id;
 
     @JsonProperty("name")
-    private String city;
+    private String name;
 
     private String weatherDescription;
 
@@ -43,4 +43,5 @@ public class Weather {
         double scale = Math.pow(10, 1);
         setTemperature(Math.ceil((((double) main.get("temp") - 273) * scale)) / scale);
     }
+
 }

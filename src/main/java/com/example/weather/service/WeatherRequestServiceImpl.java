@@ -1,7 +1,9 @@
 package com.example.weather.service;
 
+import com.example.weather.kafka.KafkaProducer;
 import com.example.weather.model.Weather;
-import com.example.weather.repository.WeatherRepository;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpMethod;
@@ -10,14 +12,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import java.util.List;
-
+import java.util.Objects;
 
 @Service
-public class WeatherServiceImpl implements WeatherService {
-
+public class WeatherRequestServiceImpl implements WeatherRequestService {
     @Autowired
-    private WeatherRepository weatherRepository;
+    private KafkaProducer kafkaProducer;
 
     @Value("${weather.url}")
     private String url;
@@ -26,25 +26,16 @@ public class WeatherServiceImpl implements WeatherService {
     private String apikey;
 
     @Override
-    public String getWeatherUrl(String city) {
-        return UriComponentsBuilder
+    public void sendWeatherInKafkaProducer(String city) throws JsonProcessingException {
+        String weatherUrl = UriComponentsBuilder
                 .newInstance()
                 .scheme("https")
                 .host(url)
                 .query("q={city name}&appid={API key}")
                 .buildAndExpand(city, apikey)
                 .toUriString();
-
+        ResponseEntity<String> responseEntity = new RestTemplate().exchange(weatherUrl, HttpMethod.GET, null, String.class);
+        Weather weather = new ObjectMapper().readValue(Objects.requireNonNull(responseEntity.getBody()), Weather.class);
+        kafkaProducer.send("weather", weather);
     }
-
-    @Override
-    public Weather saveWeather(Weather weather) {
-        return weatherRepository.save(weather);
-    }
-
-    @Override
-    public List<Weather> getAll() {
-        return weatherRepository.findAll();
-    }
-
 }
