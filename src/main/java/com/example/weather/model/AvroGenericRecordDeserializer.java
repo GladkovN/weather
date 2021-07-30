@@ -24,9 +24,8 @@ public class AvroGenericRecordDeserializer implements Deserializer {
         DatumReader<GenericRecord> datumReader = new GenericDatumReader<>(schema);
         SeekableByteArrayInput arrayInput = new SeekableByteArrayInput(data);
         GenericRecord record = null;
-        DataFileReader<GenericRecord> dataFileReader = null;
         try {
-            dataFileReader = new DataFileReader<>(arrayInput, datumReader);
+            DataFileReader<GenericRecord>  dataFileReader = new DataFileReader<>(arrayInput, datumReader);
             record = dataFileReader.next();
         } catch (IOException e) {
             e.printStackTrace();
