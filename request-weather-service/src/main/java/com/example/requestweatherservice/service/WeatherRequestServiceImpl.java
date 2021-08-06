@@ -2,7 +2,6 @@ package com.example.requestweatherservice.service;
 
 import com.example.requestweatherservice.kafka.KafkaProducer;
 import com.example.requestweatherservice.model.Weather;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -12,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.io.IOException;
 import java.util.Objects;
 
 @Service
@@ -26,7 +26,7 @@ public class WeatherRequestServiceImpl implements WeatherRequestService {
     private String apikey;
 
     @Override
-    public void sendWeatherInKafkaProducer(String city) throws JsonProcessingException {
+    public void sendWeatherInKafkaProducer(String city) throws IOException {
         String weatherUrl = UriComponentsBuilder
                 .newInstance()
                 .scheme("https")
