@@ -3,43 +3,54 @@ services:
   user:
       build:
         context: ./user-service
-      container_name: user
+      container_name: ${USER_SERVICE_CONTAINER_NAME}
       depends_on:
         - db
       environment:
-        - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/postgres
-        - SPRING_DATASOURCE_USERNAME=postgres
-        - SPRING_DATASOURCE_PASSWORD=admin
-        - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+          - PORT=${USER_SERVICE_PORT}
+          - DATASOURCE_URL=${DATASOURCE_URL}
+          - DATASOURCE_USERNAME=${DATASOURCE_USERNAME}
+          - DATASOURCE_PASSWORD=${DATASOURCE_PASSWORD}
+          - JPA_HIBERNATE_DDL_AUTO=${JPA_HIBERNATE_DDL_AUTO}
+          - DIALECT=${DIALECT}
+          - DRIVER=${DRIVER}
       ports:
-        - "8082:8082"
+          - ${USER_SERVICE_PORT}:8082
 
   request:
     build:
       context: ./request-weather-service
-    container_name: request
+    container_name: ${REQUEST_WEATHER_SERVICE_CONTAINER_NAME}
     depends_on:
       - broker
       - zookeeper
+    environment:
+      - PORT=${REQUEST_WEATHER_SERVICE_PORT}
+      - KAFKA_HOST=broker
+      - KAFKA_PORT=29092
     ports:
-      - "8080:8080"
+      - ${REQUEST_WEATHER_SERVICE_PORT}:8080
 
   storage:
-#    image: 'docker-spring-boot-postgres:latest'
     build:
       context: ./weather-storage-service
-    container_name: storage
+    container_name: ${WEATHER_STORAGE_SERVICE_CONTAINER_NAME}
     depends_on:
       - db
       - broker
       - zookeeper
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/postgres
-      - SPRING_DATASOURCE_USERNAME=postgres
-      - SPRING_DATASOURCE_PASSWORD=admin
-      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+        - PORT=${WEATHER_STORAGE_SERVICE_PORT}
+        - DATASOURCE_URL=${DATASOURCE_URL}
+        - DATASOURCE_USERNAME=${DATASOURCE_USERNAME}
+        - DATASOURCE_PASSWORD=${DATASOURCE_PASSWORD}
+        - JPA_HIBERNATE_DDL_AUTO=${JPA_HIBERNATE_DDL_AUTO}
+        - DIALECT=${DIALECT}
+        - DRIVER=${DRIVER}
+        - KAFKA_HOST=broker
+        - KAFKA_PORT=29092
     ports:
-      - "8083:8083"
+      - ${WEATHER_STORAGE_SERVICE_PORT}:8083
 
   db:
     image: 'postgres:13.1-alpine'
@@ -53,7 +64,7 @@ services:
     hostname: zookeeper
     container_name: zookeeper
     ports:
-      - "2181:2181"
+      - 2181:2181
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
@@ -65,30 +76,29 @@ services:
       depends_on:
         - zookeeper
       ports:
-        - "29092:29092"
-        - "9092:9092"
-        - "9101:9101"
+        - 29092:29092
+        - 9092:9092
+        - 9101:9101
       environment:
         KAFKA_BROKER_ID: 1
         KAFKA_ZOOKEEPER_CONNECT: 'zookeeper:2181'
         KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
-        KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://broker:29092,PLAINTEXT_HOST://localhost:9092
+        KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://broker:29092,PLAINTEXT_HOST://broker:9092   #container
+#        KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://broker:29092,PLAINTEXT_HOST://localhost:9092 #local
         KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
         KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
         KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
         KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
-#          - BROKER_HOST=broker
-#          - BROKER_ID=29092
 
-#  schema-registry:
-#      image: confluentinc/cp-schema-registry:6.2.0
-#      hostname: schema-registry
-#      container_name: schema-registry
-#      depends_on:
-#        - broker
-#      ports:
-#        - "8081:8081"
-#      environment:
-#        SCHEMA_REGISTRY_HOST_NAME: schema-registry
-#        SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: 'broker:29092'
-#        SCHEMA_REGISTRY_LISTENERS: http://0.0.0.0:8081
+  schema-registry:
+      image: confluentinc/cp-schema-registry:6.2.0
+      hostname: schema-registry
+      container_name: schema-registry
+      depends_on:
+        - broker
+      ports:
+        - 8081:8081
+      environment:
+        SCHEMA_REGISTRY_HOST_NAME: schema-registry
+        SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: 'broker:29092'
+        SCHEMA_REGISTRY_LISTENERS: http://0.0.0.0:8081

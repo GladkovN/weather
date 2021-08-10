@@ -1,7 +1,9 @@
 package com.example.weatherstorageservice.config;
 
 import com.example.weatherstorageservice.model.Weather;
-import com.example.weatherstorageservice.repository.SchemaRepository;
+import io.confluent.kafka.serializers.AbstractKafkaAvroSerDeConfig;
+import io.confluent.kafka.serializers.KafkaAvroDeserializer;
+import io.confluent.kafka.serializers.subject.RecordNameStrategy;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.LongDeserializer;
 import org.springframework.beans.factory.annotation.Value;
@@ -23,14 +25,18 @@ public class KafkaConsumerConfig {
     @Value("${spring.kafka.consumer.group-id}")
     private String kafkaGroupId;
 
+    @Value("${spring.kafka.properties.schema.registry.url}")
+    private String registryUrl;
+
     @Bean
     public Map<String, Object> consumerConfigs() {
         Map<String, Object> props = new HashMap<>();
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaServer);
         props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, LongDeserializer.class);
-        props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, "com.example.weatherstorageservice.model.AvroGenericRecordDeserializer");
         props.put(ConsumerConfig.GROUP_ID_CONFIG, kafkaGroupId);
-        props.put("SCHEMA", SchemaRepository.instance().getSchemaObject());
+        props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, KafkaAvroDeserializer.class.getName());
+        props.put(AbstractKafkaAvroSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, registryUrl);
+        props.put(AbstractKafkaAvroSerDeConfig.VALUE_SUBJECT_NAME_STRATEGY, RecordNameStrategy.class);
         return props;
     }
 

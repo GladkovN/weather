@@ -1,0 +1,11 @@
+{"namespace": "com.example.requestweatherservice",
+  "type": "record",
+  "name": "Weather",
+  "fields": [
+    {"name": "id",  "type": ["long", "null"]},
+    {"name": "name", "type": "string"},
+    {"name": "weatherDescription", "type": "string"},
+    {"name": "temperature",  "type": ["double", "null"]},
+    {"name": "windSpeed",  "type": ["double", "null"]}
+  ]
+}

@@ -15,7 +15,7 @@
     <description>Demo project for Spring Boot</description>
     <properties>
         <java.version>11</java.version>
-        <SCHEMA_REGISTRY_URL>http://localhost:8080/schema</SCHEMA_REGISTRY_URL>
+        <SCHEMA_REGISTRY_URL>http://0.0.0.0:8081</SCHEMA_REGISTRY_URL>
     </properties>
     <dependencies>
         <dependency>
@@ -56,16 +56,19 @@
             <artifactId>kafka-schema-registry-client</artifactId>
             <version>5.3.0</version>
         </dependency>
+
         <dependency>
             <groupId>org.apache.avro</groupId>
             <artifactId>avro</artifactId>
-            <version>1.8.2</version>
+            <version>1.10.2</version>
         </dependency>
+
         <dependency>
             <groupId>io.confluent</groupId>
             <artifactId>kafka-avro-serializer</artifactId>
             <version>5.2.1</version>
         </dependency>
+
         <dependency>
             <groupId>io.confluent</groupId>
             <artifactId>kafka-streams-avro-serde</artifactId>
@@ -95,6 +98,53 @@
 
     <build>
         <plugins>
+<!--            <plugin>-->
+<!--                <groupId>io.confluent</groupId>-->
+<!--                <artifactId>kafka-schema-registry-maven-plugin</artifactId>-->
+<!--                <version>6.2.0</version>-->
+<!--                <configuration>-->
+<!--                    <schemaRegistryUrls>-->
+<!--                        <param>${SCHEMA_REGISTRY_URL}</param>-->
+<!--                    </schemaRegistryUrls>-->
+<!--                    <outputDirectory>src/main/resources/avro</outputDirectory>-->
+<!--                    <userInfoConfig />-->
+<!--                    <subjects>-->
+<!--                        <com.trthhrts.SomeMessage>src/main/resources/avro/weather.avsc</com.trthhrts.SomeMessage>-->
+<!--                    </subjects>-->
+<!--                    <schemaTypes>-->
+<!--                        <com.trthhrts.SomeMessage>AVRO</com.trthhrts.SomeMessage>-->
+<!--                    </schemaTypes>-->
+<!--                </configuration>-->
+<!--                <goals>-->
+<!--                    <goal>register</goal>-->
+<!--                </goals>-->
+<!--            </plugin>-->
+            <plugin>
+                <groupId>org.apache.avro</groupId>
+                <artifactId>avro-maven-plugin</artifactId>
+                <version>1.10.2</version>
+                <executions>
+                    <execution>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>schema</goal>
+                        </goals>
+                        <configuration>
+                            <sourceDirectory>src/main/resources/avro/</sourceDirectory>
+                            <outputDirectory>src/main/java/</outputDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>11</source>
+                    <target>11</target>
+                </configuration>
+            </plugin>
+
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
