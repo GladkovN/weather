@@ -39,5 +39,4 @@ public class KafkaProducerConfig {
     public KafkaTemplate<Long, Weather> greetingKafkaTemplate() {
         return new KafkaTemplate<>(greetingProducerFactory());
     }
-
 }
