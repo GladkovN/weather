@@ -1,16 +1,14 @@
 package com.example.requestweatherservice.kafka;
 
 import com.example.requestweatherservice.model.Weather;
-import com.example.requestweatherservice.repository.SchemaRepository;
 import org.apache.avro.Schema;
 import org.apache.avro.generic.GenericData;
 import org.apache.avro.generic.GenericRecord;
+import org.apache.avro.reflect.ReflectData;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 
-import java.io.File;
 import java.io.IOException;
 
 @Component
@@ -18,11 +16,10 @@ public class KafkaProducer {
     @Autowired
     private KafkaTemplate kafkaTemplate;
 
-    @Value("${spring.kafka.properties.schema}")
-    private String avroSchema;
-
     public void send(String topic, Weather weather) throws IOException {
-        GenericRecord record = new GenericData.Record(SchemaRepository.instance().getSchemaObject());
+        Schema schema = ReflectData.get().getSchema(Weather.class);
+        GenericRecord record = new GenericData.Record(schema);
+
         record.put("id", weather.getId());
         record.put("name", weather.getName());
         record.put("weatherDescription", weather.getWeatherDescription());
